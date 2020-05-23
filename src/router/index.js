@@ -4,6 +4,19 @@ import VueRouter from 'vue-router'
 //路由懒加载
 const Login = () => import('@/components/Login')
 const Home = () => import('@/components/Home')
+
+const Welcome = () => import('@/components/HomeChildren/Welcome')
+const Users = () => import('@/components/HomeChildren/Users')
+
+const Roles = () => import('@/components/HomeChildren/Roles')
+const Rights = () => import('@/components/HomeChildren/Rights')
+
+const Goods = () => import('@/components/HomeChildren/Goods')
+const Params = () => import('@/components/HomeChildren/Params')
+const Categories = () => import('@/components/HomeChildren/Categories')
+
+const Orders = () => import('@/components/HomeChildren/Orders')
+const Reports = () => import('@/components/HomeChildren/Reports')
 Vue.use(VueRouter)
 
 const routes = [
@@ -20,7 +33,64 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    redirect:'/welcome',
+    children:[
+      {
+        path:'/welcome',
+        name:'Welcome',
+        component:Welcome
+      },
+      //用户管理
+      {
+        path:'/users',
+        name:'Users',
+        component:Users
+      },
+
+      //权限管理
+      {
+        path:'/roles',
+        name:'Roles',
+        component:Roles
+      },
+      {
+        path:'/rights',
+        name:'Rights',
+        component:Rights
+      },
+
+      //商品管理
+      {
+        path:'/goods',
+        name:'Goods',
+        component:Goods
+      },
+      {
+        path:'/params',
+        name:'Params',
+        component:Params
+      },
+      {
+        path:'/categories',
+        name:'Categories',
+        component:Categories
+      },
+      
+      //订单管理
+      {
+        path:'/orders',
+        name:'Orders',
+        component:Orders
+      },
+      
+      //数据统计
+      {
+        path:'/reports',
+        name:'Reports',
+        component:Reports
+      }
+    ]
   },
 
 

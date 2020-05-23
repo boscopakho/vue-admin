@@ -60,13 +60,13 @@ export default {
         const {data:res}= await this.axios.post("login",this.LoginForm)
         if(res.meta.status!==200) return this.$message.error('登录失败,用户名或者密码不正确')
         this.$message.success('登录成功!')
-        console.log(res);
+        // console.log(res);
         window.sessionStorage.setItem('token',res.data.token)
         this.$router.replace('/home')
       });
     }
   },
-  create: {}
+  
 };
 </script>
 
