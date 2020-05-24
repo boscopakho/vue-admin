@@ -13,9 +13,8 @@
             <el-button slot="append" icon="el-icon-search" @click="getUserListSearch"></el-button>
           </el-input>
         </el-col>
-       
-          <el-button type="primary" @click="addDialogFormVisible=true">添加用户</el-button>
-        
+
+        <el-button type="primary" @click="addDialogFormVisible=true">添加用户</el-button>
       </el-row>
 
       <!-- 表格区域 -->
@@ -55,7 +54,12 @@
               placement="top"
               :enterable="false"
             >
-              <el-button type="warning" icon="el-icon-share" size="mini"></el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-share"
+                size="mini"
+                @click="setRoleShow(scope.row)"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -92,7 +96,7 @@
           <el-input v-model="addForm.email"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="mobile">
-          <el-input v-model="addForm.mobile" ></el-input>
+          <el-input v-model="addForm.mobile"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -124,6 +128,36 @@
         <el-button @click="editDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
       </div>
+    </el-dialog>
+
+    <!-- 分配角色对话框 -->
+    <!-- 展示权限对话框 -->
+    <el-dialog
+      title="提示"
+      :close-on-click-modal="false"
+      :visible.sync="setRoleDialogFormVisible"
+      width="30%"
+      @close="setRoleDialogClose"
+    >
+      <div>
+        <p>当前的用户:{{userInfo.username}}</p>
+        <p>当前的角色:{{userInfo.role_name}}</p>
+        <p>
+          分配新角色:
+          <el-select v-model="selectId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRoleSubmit">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -167,7 +201,8 @@ export default {
         username: "",
         password: "",
         email: "111@qq.com",
-        mobile: "13112312321"
+        mobile: "13112312321",
+       
       },
       addFormRules: {
         username: [
@@ -200,7 +235,14 @@ export default {
           { required: true, message: "请输入手机号", trigger: "blur" },
           { validator: checkMobile, trigger: "blur" }
         ]
-      }
+      },
+
+      //分配角色对话框相关
+      setRoleDialogFormVisible: false,
+
+      userInfo: {},
+      roleList: [],
+      selectId:''
     };
   },
   methods: {
@@ -216,7 +258,13 @@ export default {
       this.userList = res.data.users;
       this.total = res.data.total;
     },
-
+    // 检查数据是否返回
+    checkData(res, statusNum) {
+      if (res.meta.status !== statusNum) {
+        return this.$message.error(res.meta.msg);
+      }
+      this.$message.success(res.meta.msg);
+    },
     //分页大小改变
     handleSizeChange(newSize) {
       // console.log(newSize);
@@ -259,22 +307,21 @@ export default {
       this.$refs.addFormRef.validate(async valid => {
         console.log(this.addForm);
         if (!valid) return;
-        
-       const { data: res } = await this.axios.post("users", this.addForm);
+
+        const { data: res } = await this.axios.post("users", this.addForm);
         console.log(res);
         console.log(this.addForm);
-         if (res.meta.status !== 201) {
+        if (res.meta.status !== 201) {
           return this.$message.error(res.meta.msg);
         }
         this.$message.success(res.meta.msg);
         this.addDialogFormVisible = false;
-      this.getUserList();
-      }
-    )},
+        this.getUserList();
+      });
+    },
 
     // 修改用户对话框相关函数
     editUser() {
-     
       this.$refs.editFormRef.validate(async valid => {
         if (!valid) return;
         const { data: res } = await this.axios.put(
@@ -325,7 +372,7 @@ export default {
             type: "success",
             message: "删除成功!"
           });
-          this.getUserList()
+          this.getUserList();
         })
         .catch(() => {
           this.$message({
@@ -334,9 +381,31 @@ export default {
           });
         });
     },
-    c(){
-      console.log(this.addForm);
-      
+    // 分配角色相关
+    async setRoleShow(userInfo) {
+      this.userInfo = userInfo;
+      // console.log(userInfo);
+      const { data: res } = await this.axios.get("roles");
+      this.checkData(res, 200);
+      this.roleList = res.data;
+
+      this.setRoleDialogFormVisible = true;
+    },
+    //分配角色提交
+    async setRoleSubmit(){
+      if(!this.selectId){
+         return this.$message.error('请选择要分配的角色')
+      }
+      const {data:res}=await this.axios.put(`users/${this.userInfo.id}/role`,{
+        rid:this.selectId
+      })
+      this.checkData(res,200)
+      this.getUserList()
+      this.setRoleDialogFormVisible=false
+    },
+    setRoleDialogClose(){
+      this.selectId=''
+      this.userInfo={}
     }
   }
 };
