@@ -8,3 +8,7 @@ html,body,#app{
 .el-card,.el-pagination {
     margin-top: 15px;
 }
+/* 不知道为什么要全局引入才有效 */
+.el-cascader-panel .el-scrollbar .el-scrollbar__wrap {
+    overflow-x: hidden !important;
+}
