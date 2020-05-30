@@ -12,3 +12,12 @@ html,body,#app{
 .el-cascader-panel .el-scrollbar .el-scrollbar__wrap {
     overflow-x: hidden !important;
 }
+.el-steps{
+    margin:15px 0;
+}
+.el-steps_title{
+    font-size: 13px;
+}
+.ql-editor{
+    min-height: 300px;
+}

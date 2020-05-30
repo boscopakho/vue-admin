@@ -12,6 +12,7 @@ const Roles = () => import('@/components/HomeChildren/Roles')
 const Rights = () => import('@/components/HomeChildren/Rights')
 
 const Goods = () => import('@/components/HomeChildren/Goods')
+const AddGoods = () => import('@/components/HomeChildren/AddGoods')
 const Params = () => import('@/components/HomeChildren/Params')
 const Categories = () => import('@/components/HomeChildren/Categories')
 
@@ -65,6 +66,11 @@ const routes = [
         path:'/goods',
         name:'Goods',
         component:Goods
+      },
+      {
+        path:'/goods/addgoods',
+        name:'AddGoods',
+        component:AddGoods
       },
       {
         path:'/params',
